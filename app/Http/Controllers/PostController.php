@@ -1,15 +1,30 @@
 <?php
 
 namespace App\Http\Controllers;
+
+use App\Models\Post;
 use Illuminate\Contracts\View\View;
 use Illuminate\Http\Request;
-use App\Models\Post;
 
 class PostController extends Controller
 {
-    public function posts(): View
+    public function posts(Request $request): View
     {
-        $posts = Post::all();
-        return view('posts', compact('posts'));
+        $query = trim((string) $request->query('q', ''));
+
+        $posts = Post::query()
+            ->when($query !== '', function ($builder) use ($query) {
+                $builder
+                    ->where('title', 'like', "%{$query}%")
+                    ->orWhere('description', 'like', "%{$query}%")
+                    ->orWhere('content', 'like', "%{$query}%");
+            })
+            ->orderByDesc('created_at')
+            ->get();
+
+        return view('posts', [
+            'posts' => $posts,
+            'query' => $query,
+        ]);
     }
 }

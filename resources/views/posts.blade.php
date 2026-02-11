@@ -9,6 +9,16 @@
 <body>
     <h1>Listado de Post</h1>
 
+    <form method="get" action="/" style="margin: 16px 0;">
+        <input
+            type="text"
+            name="q"
+            value="{{ $query ?? '' }}"
+            placeholder="Buscar por titulo o descripcion"
+        >
+        <button type="submit">Buscar</button>
+    </form>
+
     <table>
         <thead>
             <tr>
@@ -17,12 +27,16 @@
             </tr>
         </thead>
 
-        @foreach ($posts as $post)
-        <tr>
-            <td>{{ $post->title }}</td>
-            <td>{{ $post->description }}</td>
-        </tr>
-        @endforeach
+        @forelse ($posts as $post)
+            <tr>
+                <td>{{ $post->title }}</td>
+                <td>{{ $post->description }}</td>
+            </tr>
+        @empty
+            <tr>
+                <td colspan="2">No hay resultados.</td>
+            </tr>
+        @endforelse
     </table>
 
 </body>
